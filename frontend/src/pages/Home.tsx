@@ -1,19 +1,15 @@
-import { useEffect } from "react";
-import api from "../api/api";
+import { Link } from "react-router-dom";
 
 export default function Home() {
-
-  useEffect(() => {
-    api.get("/")
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err));
-  }, []);
-
   return (
-    <div className="p-10">
-      <h1 className="text-5xl font-bold">
-        AI Legal Risk Analyzer
-      </h1>
+    <div style={{ padding: "40px" }}>
+
+      <h1>Legal Advisor AI</h1>
+
+      <Link to="/dashboard">
+        Go To Dashboard
+      </Link>
+
     </div>
   );
 }

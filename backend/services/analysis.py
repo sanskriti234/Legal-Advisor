@@ -1,26 +1,29 @@
-from groq import Groq
+from openai import OpenAI
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
+client = OpenAI(
+    api_key=os.getenv("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1"
 )
 
+
 def analyze_legal_document(text: str):
-
     prompt = f"""
-    Analyze this legal document.
+    Analyze the following legal document.
 
-    Identify:
-    - risky clauses
-    - penalties
-    - suspicious obligations
-    - termination conditions
-    - financial risks
+    Return ONLY valid JSON in this format:
 
-    Return concise structured analysis.
+    {{
+        "risk_score": 0,
+        "summary": "",
+        "risks": [],
+        "penalties": [],
+        "termination_clauses": []
+    }}
 
     Document:
     {text}
@@ -34,7 +37,18 @@ def analyze_legal_document(text: str):
                 "content": prompt
             }
         ],
-        temperature=0.2,
+        temperature=0.2
     )
 
-    return response.choices[0].message.content
+    result = response.choices[0].message.content
+
+    try:
+        return json.loads(result)
+    except Exception:
+        return {
+            "risk_score": 0,
+            "summary": result,
+            "risks": [],
+            "penalties": [],
+            "termination_clauses": []
+        }
